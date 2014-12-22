@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical" >
+
+    <com.loopj.android.image.SmartImageView
+        android:id="@+id/Icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="180dp"
+        android:layout_marginTop="150dp"
+        android:src="@drawable/ic_launcher" />
+
+     <TextView
+         android:id="@+id/Name"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentLeft="true"
+         android:layout_alignParentTop="true"
+         android:layout_marginTop="10dp"
+         android:text="名前" />
+
+     <TextView
+         android:id="@+id/Screen_Name"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentLeft="true"
+         android:layout_alignTop="@+id/Name"
+         android:layout_marginTop="60dp"
+         android:text="ID" />
+
+     <TextView
+         android:id="@+id/FollowCount"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentLeft="true"
+         android:layout_alignTop="@+id/Screen_Name"
+         android:layout_marginTop="65dp"
+         android:text="フォロー" />
+
+     <TextView
+         android:id="@+id/Follower"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentLeft="true"
+         android:layout_alignTop="@+id/Icon"
+         android:layout_marginTop="41dp"
+         android:text="フォロワー" />
+
+     <TextView
+         android:id="@+id/Favorite"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentLeft="true"
+         android:layout_below="@+id/Icon"
+         android:text="お気に入り" />
+
+     <TextView
+         android:id="@+id/Text"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_alignParentLeft="true"
+         android:layout_alignTop="@+id/Favorite"
+         android:layout_marginTop="52dp"
+         android:text="自己紹介" />
+
+    </RelativeLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TwitterApplication</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_pin">PinActivity</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_reply">ReplyActivity</string>
+    <string name="title_activity_direct_message">DirectMessageActivity</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="twitter_consumer_key">FsYF2mWXFjlos8VgiSVz8nfHv</string>
+    <string name="twitter_consumer_secret">KkXSXlRiyQstw8K8JCiU2Q4Bfw7GRVHkWodaS2G2MqenchlVeW</string>
+    <string name="title_activity_twitter_oauth">TwitterOAuthActivity</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="twitter_callback_url">callback://twitter</string>
+    <string name="title_activity_sample">SampleActivity</string>
+    
+</resources>

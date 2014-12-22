@@ -1,0 +1,227 @@
+package jp.nadai.twitterapplication;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import jp.nadai.twitterapplication.model.Post;
+import jp.nadai.twitterapplication.model.Timeline;
+import twitter4j.ResponseList;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import android.app.AlertDialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.Toast;
+
+public class HomeActivity extends ListActivity{
+	 private Timeline mAdapter;
+	 private Twitter mTwitter;
+	 ArrayList<HashMap<String, String>> mList;
+
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState)  {//main
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home);
+		mList = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> item;
+        for (int a = 0; a < 20; a++) {
+            item = new HashMap<String, String>();
+            item.put("title", "Title " + String.valueOf(a+1));
+            item.put("desc", "Description " + String.valueOf(a+1));
+            mList.add(item);
+        }
+		if (!TwitterUtils.hasAccessToken(this)) {
+	        Intent intent = new Intent(this, TwitterOAuthActivity.class);
+	        startActivity(intent);
+	        finish();
+
+	    }
+
+	    else{
+	        mAdapter = new Timeline(this);
+	        setListAdapter(mAdapter);
+	        mTwitter = TwitterUtils.getTwitterInstance(this);
+	        reloadTimeLine();
+
+	    }
+		/*
+		ListView listview = getListView();
+
+		//長押し
+		listview.setOnItemLongClickListener(
+			new AdapterView.OnItemLongClickListener() {
+			   @Override
+			   public boolean onItemLongClick(AdapterView parent,View view, int position, long id) {
+				   ListView listview=(ListView)parent;
+				   showToast("Long Tap" + String.valueOf(position));
+				   return true;
+			   }
+			}
+		);*/
+	}
+
+	//タップ
+	protected void onListItemClick(ListView l, View v, int position, long id){
+		super.onListItemClick(l, v, position, id);
+		//showToast("Short Tap" + String.valueOf(position));
+		 super.onListItemClick(l, v, position, id);
+
+	        String[] dialogItem = new String[]{"リプライ", "リツイート", "お気に入り"};
+	        AlertDialog.Builder dialogMenu = new AlertDialog.Builder(this);
+	        dialogMenu.setItems(dialogItem, new DialogInterface.OnClickListener() {
+
+
+	            public void onClick(DialogInterface dialog, int which)
+	            {
+
+	            	 switch (which)
+	                 {
+	     	        case 0:
+	    	            //リプライ押下時の操作
+	     	        	showToast("リプライの取得");
+	    	            // Intent intent = new Intent(this,ReplyActivity.class);
+	    		         //startActivity(intent);
+	     	        	break;
+
+	    	        case 1:
+	    	            //リツイート押下時の操作
+	    	        	showToast("リツイートの取得");
+	    	            //Intent intent2 = new Intent(this,????.class);
+	    		        //startActivity(intent);
+	    	        	break;
+
+	    	        case 2:
+	    	            //お気に入り押下時の操作
+	    	        	showToast("お気に入りの取得");
+	    	            //Intent intent3 = new Intent(this,????.class);
+	    		        //startActivity(intent);
+	            	    break;
+	                 }
+
+
+	            }
+	        }).create().show();
+
+
+	}
+	/*
+	@Override
+	public boolean onContextItemSelected(MenuItem item)
+	{
+	    switch (item.getItemId()) {
+	        case R.id.reply:
+	            //リプライ押下時の操作
+	             Intent intent = new Intent(this,ReplyActivity.class);
+		         startActivity(intent);
+	            return true;
+	        case R.id.retweet:
+	            //リツイート押下時の操作
+	            Intent intent = new Intent(this,????.class);
+		        startActivity(intent);
+	            return true;
+	        case R.id.favorite:
+	            //お気に入り押下時の操作
+	            Intent intent = new Intent(this,????.class);
+		        startActivity(intent);
+	            return true;
+	        default:
+	            return super.onContextItemSelected(item);
+	    }
+	}
+*/
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {//option
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.home, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {//selectmenu
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+
+		switch (item.getItemId()) {
+
+	    case R.id.sent:
+	      ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_SYSTEM, ToneGenerator.MAX_VOLUME);
+	      toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP);
+	      Toast ts = Toast.makeText(this, "投稿が選択されました", Toast.LENGTH_LONG);
+	      ts.show();
+	      Intent intent = new Intent(this,Post.class);
+		  startActivity(intent);
+	      return true;
+
+
+	    case R.id.reply:
+		  ToneGenerator toneGenerator2 = new ToneGenerator(AudioManager.STREAM_SYSTEM, ToneGenerator.MAX_VOLUME);
+          toneGenerator2.startTone(ToneGenerator.TONE_PROP_BEEP);
+	      Toast ts2 = Toast.makeText(this, "リプライが選択されました", Toast.LENGTH_LONG);
+		  ts2.show();
+		  Intent intent1 = new Intent(this,ReplyActivity.class);
+		  startActivity(intent1);
+		  return true;
+
+	    case R.id.DM:
+		  ToneGenerator toneGenerator3 = new ToneGenerator(AudioManager.STREAM_SYSTEM, ToneGenerator.MAX_VOLUME);
+		  toneGenerator3.startTone(ToneGenerator.TONE_PROP_BEEP);
+		  Toast ts3 = Toast.makeText(this, "DMが選択されました", Toast.LENGTH_LONG);
+		  ts3.show();
+		  Intent intent2 = new Intent(this,DirectMessageActivity.class);
+			startActivity(intent2);
+		  return true;
+
+	    case R.id.search:
+		  ToneGenerator toneGenerator4 = new ToneGenerator(AudioManager.STREAM_SYSTEM, ToneGenerator.MAX_VOLUME);
+		  toneGenerator4.startTone(ToneGenerator.TONE_PROP_BEEP);
+		  Toast ts4 = Toast.makeText(this, "検索が選択されました", Toast.LENGTH_LONG);
+		  ts4.show();
+		  Intent intent3 = new Intent(this,SearchActivity.class);
+		  startActivity(intent3);
+		  return true;
+		}
+	    return false;
+	  }
+
+
+	private void reloadTimeLine() {
+	    AsyncTask<Void, Void, List<twitter4j.Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
+	        @Override
+	        protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
+	            try {
+	                return mTwitter.getHomeTimeline();
+	            } catch (TwitterException e) {
+	                e.printStackTrace();
+	            }
+	            return null;
+	        }
+	        @Override
+	        protected void onPostExecute(List<twitter4j.Status> result) {
+	            if (result != null) {
+	                mAdapter.clear();
+	                for (twitter4j.Status status : result) {
+	                    mAdapter.add(status);
+	                }
+	                getListView().setSelection(0);
+	            } else {
+	                showToast("タイムラインの取得に失敗しました…");
+	            }
+	        }
+	    };
+	    task.execute();
+	}
+	private void showToast(String text) {
+	    Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+	}
+
+}

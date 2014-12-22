@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="jp.nadai.twitterapplication.HomeActivity" >
+     <item android:id="@+id/reply" android:title="リプライ"></item>
+    <item android:id="@+id/DM" android:title="DM"></item>
+    <item android:id="@+id/search" android:title="検索"></item>
+    <item android:id="@+id/reload" android:title="更新"></item>
+
+
+
+</menu>

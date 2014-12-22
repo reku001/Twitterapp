@@ -1,0 +1,72 @@
+package jp.nadai.twitterapplication;
+
+import jp.nadai.twitterapplication.model.Mentionline;
+import jp.nadai.twitterapplication.model.Tweet;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class ReplyActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_reply);
+
+
+
+	Mentionline mention=new Mentionline();
+	Tweet[] tweet=new Tweet[20];
+	mention.init();
+		int number=3;
+		int max=20;
+
+	
+		
+//for(int i=0;i<max;i++){
+		
+		ImageView image=(ImageView)findViewById(R.id.imageView1);
+	
+	image.setImageDrawable(mention.getReplyImage(number));
+	
+		TextView honbun=(TextView)findViewById(R.id.text);
+		honbun.setText(mention.getReplyText(number));
+		TextView name=(TextView)findViewById(R.id.screen_name);
+		name.setText(mention.getReplyName(number));
+
+		TextView ID=(TextView)findViewById(R.id.name);
+		ID.setText("@"+mention.getReplyId(number));
+
+		honbun.setText(mention.getReplyText(number));
+
+		name.setText(mention.getReplyName(number));
+
+		ID.setText("@"+mention.getReplyId(number));
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.reply, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+        
+		
+		
+		return super.onOptionsItemSelected(item);
+
+	}
+}

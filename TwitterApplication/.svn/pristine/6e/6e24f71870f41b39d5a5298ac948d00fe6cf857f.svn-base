@@ -1,0 +1,55 @@
+package jp.nadai.twitterapplication;
+import jp.nadai.twitterapplication.model.Timeline;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
+
+public class HomeActivity extends Activity {
+
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {//main
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home);
+		Timeline timeline = new Timeline();
+		//Toast.makeText(this, timeline.getTimelineFirst(0), Toast.LENGTH_SHORT).show();
+
+		TextView honbun=(TextView)findViewById(R.id.text);
+		honbun.setText(timeline.getTimelineFirst(0));
+
+		TextView name=(TextView)findViewById(R.id.screen_name);
+		name.setText(timeline.getTimelineSecond(0));
+
+		TextView ID=(TextView)findViewById(R.id.name);
+		ID.setText("@"+timeline.getTimelineThird(0));
+
+		honbun.setText(timeline.getTimelineFirst(1));
+
+		name.setText(timeline.getTimelineSecond(1));
+
+		ID.setText("@"+timeline.getTimelineThird(1));
+
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {//option
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.home, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {//selectmenu
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+}

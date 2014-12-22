@@ -1,0 +1,290 @@
+package jp.nadai.twitterapplication;
+import java.util.List;
+
+import jp.nadai.twitterapplication.model.Mentionline;
+import jp.nadai.twitterapplication.model.Timeline;
+import twitter4j.ResponseList;
+import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.User;
+import android.app.AlertDialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
+//import android.media.AudioManager;
+//import android.media.ToneGenerator;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.loopj.android.image.SmartImageView;
+public class HomeActivity extends ListActivity{
+	 private Timeline mAdapter;
+	 private Twitter mTwitter;
+	 int pageNum = 1;
+
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState)  {//main
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home);
+
+		if (!TwitterUtils.hasAccessToken(this)) {
+	        Intent intent = new Intent(this, TwitterOAuthActivity.class);
+	        startActivity(intent);
+	        finish();
+
+	    }
+
+	    else{
+	        mAdapter = new Timeline(this);
+	        setListAdapter(mAdapter);
+	        mTwitter = TwitterUtils.getTwitterInstance(this);
+	        reloadTimeLine();
+
+
+	    }
+		final TextView tweeting=(TextView)findViewById(R.id.editText1);
+		 Button btn = (Button)findViewById(R.id.button1);
+		btn.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+			    // TODO 自動生成されたメソッド・スタブ
+			    try {
+				    mTwitter.updateStatus(new StatusUpdate(tweeting.getText().toString()));
+			    } catch (TwitterException e2) {
+			    	e2.printStackTrace();
+			    }
+			    showToast("ツイートしました");
+			    tweeting.setText(null);
+			}
+			});
+
+		ListView listview = getListView();
+		final ListView listView = (ListView) findViewById(android.R.id.list);
+
+		listView.setOnScrollListener(new OnScrollListener() {
+
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+			}
+
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				int position = listView.getFirstVisiblePosition();
+				if (listView.getChildAt(0) != null) {
+					int y = listView.getLastVisiblePosition();
+					//listView.setSelectionFromTop(position, y);
+					int z=pageNum*20-1;
+					if (y==z) {
+						pageNum++;
+						reloadTimeLine();
+						showToast("loading...");
+					}
+				}
+			}
+		});
+
+		Mentionline mention = new Mentionline();
+
+		mention.init();
+
+
+		listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {//長押し
+
+			   @Override
+			   public boolean onItemLongClick(AdapterView parent,View view, int position, long id) {
+				   LayoutInflater factory = LayoutInflater.from(HomeActivity.this);
+			       final View inputview = factory.inflate(R.layout.detail_tweet, null);
+
+				   AlertDialog.Builder syosai = new AlertDialog.Builder(HomeActivity.this);
+				   User statusUser=mAdapter.getItem(position).getUser();
+
+				   SmartImageView icon = (SmartImageView)inputview.findViewById(R.id.Icon);
+				   icon.setImageUrl(statusUser.getProfileImageURL());
+				   TextView name=(TextView)inputview.findViewById(R.id.Name);
+				   name.setText("ユーザ名    : "+statusUser.getName()+"\n");
+
+				   TextView screen_name=(TextView)inputview.findViewById(R.id.Screen_Name);
+				   screen_name.setText("ID               : "+statusUser.getScreenName()+"\n");
+
+				   TextView follow=(TextView)inputview.findViewById(R.id.FollowCount);
+				   follow.setText("フォロー    : "+statusUser.getFriendsCount()+"\n");
+
+				   TextView follower=(TextView)inputview.findViewById(R.id.Follower);
+				   follower.setText("フォロワー: "+statusUser.getFollowersCount()+"\n");
+
+				   TextView favorite=(TextView)inputview.findViewById(R.id.Favorite);
+				   favorite.setText("お気に入り: "+statusUser.getFavouritesCount()+"\n");
+
+				   TextView text=(TextView)inputview.findViewById(R.id.Text);
+				   text.setText("自己紹介文: \n"+statusUser.getDescription()+"\n");
+
+			       syosai.setTitle("詳細");
+			       syosai.setView(inputview);
+				   syosai.show();
+				   return true;
+			   }
+			}
+		);
+	}
+
+	//タップ
+	@Override
+	public void onListItemClick(ListView l, View v, final int position, final long id){
+		super.onListItemClick(l, v, position, id);
+
+
+	        String[] dialogItem = new String[]{"リプライ", "リツイート", "お気に入り"};
+	        AlertDialog.Builder dialogMenu = new AlertDialog.Builder(this);
+	        dialogMenu.setItems(dialogItem, new DialogInterface.OnClickListener() {
+
+	            public void onClick(DialogInterface dialog, int which)
+	            {
+	            	 switch (which)
+	                 {
+	     	        case 0:
+	    	            //リプライ押下時の操作
+	     	        	final EditText editview=new EditText(HomeActivity.this);
+	     	            AlertDialog.Builder dialogReply = new AlertDialog.Builder(HomeActivity.this);
+	     	            dialogReply.setTitle("リプライ画面");
+	     	            dialogReply.setView(editview);
+	     	            dialogReply.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which){
+							// TODO 自動生成されたメソッド・スタブ
+
+							try {
+								mTwitter.updateStatus(new StatusUpdate("@"+mAdapter.getItem(position).getUser().getScreenName() +"  "+editview.getText().toString()).inReplyToStatusId(position));
+							} catch (TwitterException e2) {
+								// TODO 自動生成された catch ブロック
+								e2.printStackTrace();
+							}
+							showToast("リプライしました");
+
+						}
+	     	            });
+	     	            dialogReply.show();
+	     	            break;
+
+
+
+
+	    	        case 1:
+	    	            //リツイート押下時の操作
+
+	    	        	try {
+
+							mTwitter.retweetStatus(mAdapter.getItem(position).getId());
+						} catch (TwitterException e1) {
+							// TODO 自動生成された catch ブロック
+							e1.printStackTrace();
+						}
+	    	        	showToast("リツイートしました");
+	    	        	break;
+
+	    	        case 2:
+	    	            //お気に入り押下時の操作
+
+	    	        	try {
+
+							mTwitter.createFavorite(mAdapter.getItem(position).getId());
+						} catch (TwitterException e) {
+							// TODO 自動生成された catch ブロック
+							e.printStackTrace();
+						}
+	    	        	showToast("お気に入りに追加しました");
+	            	    break;
+	                 }
+	            }
+	        }).create().show();
+
+
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {//option
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.home, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {//メニューキー押したときの処理
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+
+		switch (item.getItemId()) {
+
+	      case R.id.reply://リプライ選択時
+		  showToast("リプライ一覧に移動しました");
+		  Intent intent1 = new Intent(this,ReplyActivity.class);
+		  startActivity(intent1);
+		  return true;
+
+	    case R.id.DM://DM選択時
+			showToast("DM画面に移動しました");
+
+	    	Intent intent2 = new Intent(this,DirectMessageActivity.class);
+			startActivity(intent2);
+		  return true;
+
+	    case R.id.search://検索選択時
+		  showToast("検索画面に移動しました");
+
+	      Intent intent3 = new Intent(this,SearchActivity.class);
+		  startActivity(intent3);
+		  return true;
+		}
+	    return false;
+	  }
+
+
+	private void reloadTimeLine() {
+	    AsyncTask<Void, Void, List<twitter4j.Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
+	        @Override
+	        protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
+	            try {
+	                return mTwitter.getHomeTimeline();
+	            } catch (TwitterException e) {
+	                e.printStackTrace();
+	            }
+	            return null;
+	        }
+	        @Override
+	        protected void onPostExecute(List<twitter4j.Status> result) {
+	            if (result != null) {
+
+	                for (twitter4j.Status status : result) {
+	                    mAdapter.add(status);
+	                }
+
+	            } else {
+	                showToast("タイムラインの取得に失敗しました…");
+	            }
+	        }
+	    };
+	    task.execute();
+	}
+	private void showToast(String text) {
+		Toast ts=Toast.makeText(this, text, Toast.LENGTH_SHORT);
+		ts.setGravity(Gravity.CENTER,0 , 0);
+
+		ts.show();
+
+	}
+
+
+
+}

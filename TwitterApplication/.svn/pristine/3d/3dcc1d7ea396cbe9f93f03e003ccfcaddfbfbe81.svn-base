@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+  
+     
+    <com.loopj.android.image.SmartImageView
+        android:id="@+id/Icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_launcher" />
+
+     <TextView
+        android:id="@+id/Screen_Name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/Name"
+        android:text="ID" />
+
+     <TextView
+         android:id="@+id/Name"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:text="名前" />
+
+     <TextView
+        android:id="@+id/FollowCount"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/Screen_Name"
+        android:text="フォロー" />
+
+     <TextView
+        android:id="@+id/Follower"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/FollowCount"
+        android:text="フォロワー" />
+
+     <TextView
+        android:id="@+id/Favorite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/Follower"
+        android:text="お気に入り" />
+
+     <TextView
+        android:id="@+id/Text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/Favorite"
+        android:text="自己紹介" />
+
+
+    </RelativeLayout>

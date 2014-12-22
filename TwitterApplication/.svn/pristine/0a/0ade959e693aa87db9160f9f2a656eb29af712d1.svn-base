@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.twitterapplication.MainActivity" >
+
+
+    <item android:id="@+id/reply" android:title="リプライ"></item>
+    <item android:id="@+id/retweet" android:title="リツイート"></item>
+    <item android:id="@+id/favorite" android:title="お気に入り"></item>
+
+
+</menu>

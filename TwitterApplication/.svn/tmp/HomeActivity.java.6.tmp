@@ -1,0 +1,841 @@
+package jp.nadai.twitterapplication;
+import jp.nadai.twitterapplication.model.Mentionline;
+import jp.nadai.twitterapplication.model.Timeline;
+import twitter4j.Paging;
+import twitter4j.RateLimitStatus;
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.User;
+import twitter4j.UserStreamAdapter;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
+import android.app.AlertDialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+//import android.media.AudioManager;
+//import android.media.ToneGenerator;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager.LayoutParams;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ViewFlipper;
+
+import com.loopj.android.image.SmartImageView;
+public class HomeActivity extends ListActivity{
+<<<<<<< .mine
+	 private Timeline mAdapter;
+	 private Twitter mTwitter;
+	 private MyUserStreamAdapter mMyUserStreamAdapter;
+	 TwitterStream twitterStream;
+	 int pageNum = 1,limit,time;
+	 boolean ismAtClean=false;
+	 NetworkInfo nInfo;
+	 ConnectivityManager cm;
+=======
+	private Timeline mAdapter;
+	private Twitter mTwitter;
+
+	TwitterStream twitterStream;
+	ArrayList<twitter4j.Status> arrayList=new ArrayList<twitter4j.Status>();;
+	NetworkInfo nInfo;
+	ConnectivityManager cm;
+
+	int pageNum = 1,limit,time;
+	boolean ismAtClean=false;
+
+
+>>>>>>> .r575
+	 private ViewFlipper viewFlipper;
+	 MotionEvent e1,e2;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState)  {//main
+
+		super.onCreate(savedInstanceState);
+		getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_HIDDEN);//最初キーボードを非表示
+		setContentView(R.layout.activity_home);
+
+<<<<<<< .mine
+//		onTouch(e1, e2, limit, limit);
+
+//		viewFlipper = (ViewFlipper) findViewById(R.id.flipper);
+//
+////        Button prevButton = (Button) findViewById(R.id.prevButton);
+////        Button nextButton = (Button) findViewById(R.id.nextButton);
+////
+////        prevButton.setOnClickListener(this);
+////        nextButton.setOnClickListener(this);
+//
+//        viewFlipper.setAutoStart(true);     //自動でスライドショーを開始
+//        viewFlipper.setFlipInterval(1000);  //更新間隔(ms単位)
+//    }
+//    public void onClick(View v) {
+//        switch(v.getId()){
+//
+////        case R.id.prevButton:
+////            viewFlipper.showPrevious();
+////            break;
+////        case R.id.nextButton:
+////            viewFlipper.showNext();
+////            break;
+//        }
+
+=======
+		// ここは別途OAuth認証して情報を取得する。。。
+		String oAuthConsumerKey = "FsYF2mWXFjlos8VgiSVz8nfHv";
+		String oAuthConsumerSecret = "KkXSXlRiyQstw8K8JCiU2Q4Bfw7GRVHkWodaS2G2MqenchlVeW";
+		String oAuthAccessToken = "1017709742-5E7r1mqChjXU6Pduk56dJeM2iXgjLjbZmaK3M1L";
+		String oAuthAccessTokenSecret = "djr8C9vLjCPQ7wPRVEjWGq9SHxpTPnRpyU0nADCTC8IS1";
+>>>>>>> .r575
+
+
+<<<<<<< .mine
+		mMyUserStreamAdapter = new MyUserStreamAdapter();
+        // ここは別途OAuth認証して情報を取得する。。。
+        String oAuthConsumerKey = "FsYF2mWXFjlos8VgiSVz8nfHv";
+        String oAuthConsumerSecret = "KkXSXlRiyQstw8K8JCiU2Q4Bfw7GRVHkWodaS2G2MqenchlVeW";
+        String oAuthAccessToken = "1017709742-5E7r1mqChjXU6Pduk56dJeM2iXgjLjbZmaK3M1L";
+        String oAuthAccessTokenSecret = "djr8C9vLjCPQ7wPRVEjWGq9SHxpTPnRpyU0nADCTC8IS1";
+        // Twitter4Jに対してOAuth情報を設定
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        {
+            // アプリ固有の情報
+            builder.setOAuthConsumerKey(oAuthConsumerKey);
+            builder.setOAuthConsumerSecret(oAuthConsumerSecret);
+            // アプリ＋ユーザー固有の情報
+            builder.setOAuthAccessToken(oAuthAccessToken);
+            builder.setOAuthAccessTokenSecret(oAuthAccessTokenSecret);
+        }
+
+        // 1. TwitterStreamFactory をインスタンス化する
+        Configuration conf = builder.build();
+        TwitterStreamFactory twitterStreamFactory = new TwitterStreamFactory(conf);
+        // 2. TwitterStream をインスタンス化する
+        TwitterStream twitterStream = twitterStreamFactory.getInstance();
+
+=======
+		ConfigurationBuilder builder = new ConfigurationBuilder();
+		{
+			// アプリ固有の情報
+			builder.setOAuthConsumerKey(oAuthConsumerKey);
+			builder.setOAuthConsumerSecret(oAuthConsumerSecret);
+			// アプリ＋ユーザー固有の情報
+			builder.setOAuthAccessToken(oAuthAccessToken);
+			builder.setOAuthAccessTokenSecret(oAuthAccessTokenSecret);
+		}
+>>>>>>> .r575
+
+<<<<<<< .mine
+            // 4. TwitterStream に UserStreamListener を実装したインスタンスを設定する
+            twitterStream.addListener(mMyUserStreamAdapter);
+            // 5. TwitterStream#user() を呼び出し、ユーザーストリームを開始する
+            twitterStream.user();
+=======
+>>>>>>> .r575
+
+		Configuration conf = builder.build();
+		TwitterStreamFactory twitterStreamFactory = new TwitterStreamFactory(conf);
+		TwitterStream twitterStream = twitterStreamFactory.getInstance();
+		twitterStream.addListener(this);
+		twitterStream.user();
+
+
+		if (!TwitterUtils.hasAccessToken(this)) {
+			Intent intent = new Intent(this, TwitterOAuthActivity.class);
+			startActivity(intent);
+			finish();
+		}else{
+			mAdapter = new Timeline(this);
+			setListAdapter(mAdapter);
+			mTwitter = TwitterUtils.getTwitterInstance(this);
+			reloadTimeLine();
+		}
+
+
+<<<<<<< .mine
+=======
+		final TextView tweeting=(TextView)findViewById(R.id.editText1);
+		Button btn = (Button)findViewById(R.id.button1);
+
+
+>>>>>>> .r575
+		btn.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+<<<<<<< .mine
+			    // TODO 自動生成されたメソッド・スタブ
+			    try {
+				    mTwitter.updateStatus(new StatusUpdate(tweeting.getText().toString()));
+			    } catch (TwitterException e2) {
+			    	e2.printStackTrace();
+			    }
+			    showToast("投稿しました");
+			    tweeting.setText(null);
+			    mAdapter.clear();
+			    reloadTimeLine();
+=======
+				// TODO 自動生成されたメソッド・スタブ
+				try {
+					mTwitter.updateStatus(new StatusUpdate(tweeting.getText().toString()));
+				} catch (TwitterException e2) {
+					e2.printStackTrace();
+				}
+				showToast("投稿しました");
+				tweeting.setText(null);
+
+>>>>>>> .r575
+			}
+		});
+
+
+		ListView listview = getListView();
+		final ListView listView = (ListView) findViewById(android.R.id.list);
+//		  OverScrollView lv = (OverScrollView) findViewById(R.id.listview);
+//		  listView.setAdapter(mAdapter);
+////未完成のオーバースクロール
+
+
+		listView.setOnScrollListener(new OnScrollListener() {
+
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+			}
+
+			public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount)
+			{
+<<<<<<< .mine
+//				if (listView.getChildAt(0) != null){
+////					if ((totalItemCount != 0) && (totalItemCount == firstVisibleItem + visibleItemCount)) {
+//				   if (totalItemCount == firstVisibleItem + visibleItemCount) {
+//					    View view1 = listView.getChildAt(listView.getChildCount() - 1);
+//					    if(view1.getBottom() == listView.getBottom() - listView.getPaddingBottom()){
+//					   ismAtClean=false;
+//				    	reloadTimeLine();
+//						showToast("loading...");
+//
+////						mAdapter.notifyDataSetChanged();
+//						return;
+//				   }
+//
+//				int position = listView.getFirstVisiblePosition();
+=======
+>>>>>>> .r575
+
+			
+
+				if (listView.getChildAt(0) != null)
+				{
+					int y = listView.getLastVisiblePosition();
+				
+					int z=pageNum*20-1;
+					if (y==z) {
+						pageNum++;
+						ismAtClean=false;
+
+						reloadTimeLine();
+						showToast("loading...");
+					}
+				}
+			}
+
+
+//			private void getActionBarView(){
+//				 LayoutInflater inflater = LayoutInflater.from(this);
+//				    View view = inflater.inflate(R.layout.action_bar_icon_layout, null);
+//
+//			}
+		});
+
+
+		Mentionline mention = new Mentionline();
+		mention.init();
+
+
+		listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {//長押し時の処理
+			@Override
+			public boolean onItemLongClick(AdapterView parent,View view, int position, long id) {
+				LayoutInflater factory = LayoutInflater.from(HomeActivity.this);
+				final View inputview = factory.inflate(R.layout.detail_tweet, null);
+
+				AlertDialog.Builder syosai = new AlertDialog.Builder(HomeActivity.this);
+				User statusUser=mAdapter.getItem(position).getUser();
+
+				SmartImageView icon = (SmartImageView)inputview.findViewById(R.id.Icon);
+				icon.setImageUrl(statusUser.getProfileImageURL());
+				TextView name=(TextView)inputview.findViewById(R.id.Name);
+				name.setText("ユーザ名    : "+statusUser.getName()+"\n");
+
+				TextView screen_name=(TextView)inputview.findViewById(R.id.Screen_Name);
+				screen_name.setText("ID               : "+statusUser.getScreenName()+"\n");
+
+				TextView follow=(TextView)inputview.findViewById(R.id.FollowCount);
+				follow.setText("フォロー    : "+statusUser.getFriendsCount()+"\n");
+
+				TextView follower=(TextView)inputview.findViewById(R.id.Follower);
+				follower.setText("フォロワー: "+statusUser.getFollowersCount()+"\n");
+
+				TextView favorite=(TextView)inputview.findViewById(R.id.Favorite);
+				favorite.setText("お気に入り: "+statusUser.getFavouritesCount()+"\n");
+
+				TextView text=(TextView)inputview.findViewById(R.id.Text);
+				text.setText("自己紹介文: \n"+statusUser.getDescription()+"\n");
+
+				syosai.setTitle("詳細");
+				syosai.setView(inputview);
+				syosai.show();
+				return true;
+			}
+		}
+				);
+	}
+
+
+	//タップ時の処理
+	@Override
+	public void onListItemClick(ListView l, View v, final int position, final long id){
+
+
+		super.onListItemClick(l, v, position, id);
+		String[] dialogItem = new String[]{"リプライ", "リツイート", "お気に入り"};
+		AlertDialog.Builder dialogMenu = new AlertDialog.Builder(this);
+
+
+		dialogMenu.setItems(dialogItem, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which)
+			{
+				switch (which)
+				{
+				case 0:
+					//リプライ押下時の操作
+					final EditText tweeting=(EditText)findViewById(R.id.editText1);
+					tweeting.setText("@"+mAdapter.getItem(position).getUser().getScreenName()+" ");
+					CharSequence str = tweeting.getText();
+					tweeting.setSelection(str.length());
+					Button btn = (Button)findViewById(R.id.button1);
+					btn.setText("リプライ");
+					btn.setOnClickListener(new View.OnClickListener() {
+
+						public void onClick(View v) {
+							// TODO 自動生成されたメソッド・スタブ
+							try {
+								mTwitter.updateStatus(new StatusUpdate(tweeting.getText().toString()).inReplyToStatusId(position));
+							} catch (TwitterException e2) {
+								e2.printStackTrace();
+							}
+							showToast("リプライしました");
+							tweeting.setText(null);
+						}
+					});
+					break;
+
+				case 1:
+					//リツイート押下時の操作
+					try {
+						mTwitter.retweetStatus(mAdapter.getItem(position).getId());
+					} catch (TwitterException e1) {
+						// TODO 自動生成された catch ブロック
+						e1.printStackTrace();
+					}
+					showToast("リツイートしました");
+					break;
+
+				case 2:
+					//お気に入り押下時の操作
+					try {
+						mTwitter.createFavorite(mAdapter.getItem(position).getId());
+					} catch (TwitterException e) {
+						// TODO 自動生成された catch ブロック
+						e.printStackTrace();
+					}
+					showToast("お気に入りに追加しました");
+					break;
+				}
+			}
+		}).create().show();
+
+
+	}
+	@Override
+<<<<<<< .mine
+=======
+
+>>>>>>> .r575
+	public boolean onCreateOptionsMenu(Menu menu) {//option
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.home, menu);
+		return true;
+	}
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {//メニューキー押したときの処理
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		switch (item.getItemId()) {
+		case R.id.reply://リプライ選択時
+			showToast("リプライ一覧に移動しました");
+			Intent intent1 = new Intent(this,ReplyActivity.class);
+			startActivity(intent1);
+			return true;
+
+		case R.id.DM://DM選択時
+			showToast("DM画面に移動しました");
+
+			Intent intent2 = new Intent(this,DirectMessageActivity.class);
+			startActivity(intent2);
+			return true;
+
+		case R.id.search://検索選択時
+			showToast("検索画面に移動しました");
+
+			Intent intent3 = new Intent(this,SearchActivity.class);
+			startActivity(intent3);
+			return true;
+
+		case R.id.reload://更新選択時
+
+<<<<<<< .mine
+	    case R.id.reload://更新選択時
+	    	/*
+	    	pageNum=1;
+	    	 ismAtClean=true;
+=======
+			pageNum=1;
+			ismAtClean=true;
+>>>>>>> .r575
+			reloadTimeLine();
+			showToast("更新しています");
+<<<<<<< .mine
+			*/
+
+=======
+
+>>>>>>> .r575
+			return true;
+	    case R.id.access:
+	   	 showToast(String.valueOf("後"+limit+"回"));
+		 showToast(String.valueOf("回復まで"+time+"秒"));
+
+	    	return true;
+		}
+		return false;
+	}
+
+
+	private void reloadTimeLine() {
+		AsyncTask<Void, Void, ArrayList<twitter4j.Status>> task = new AsyncTask<Void, Void, ArrayList<twitter4j.Status>>() {
+			@Override
+			protected ArrayList<twitter4j.Status> doInBackground(Void... params) {
+				try {
+
+					Paging paging = new Paging(pageNum,20);
+					ResponseList<twitter4j.Status> responseList = mTwitter.getHomeTimeline(paging);
+
+					arrayList.clear();
+					for(int i=0;i<responseList.size();i++){
+						arrayList.add(responseList.get(i));			            		
+					}
+					return arrayList;
+				} catch (TwitterException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+<<<<<<< .mine
+	private void reloadTimeLine() {
+	    AsyncTask<Void, Void, ResponseList<twitter4j.Status>> task = new AsyncTask<Void, Void, ResponseList<twitter4j.Status>>() {
+	        @Override
+	        protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
+	            try {
+
+	            	Paging paging = new Paging(pageNum,20);
+	            	ResponseList<twitter4j.Status> responseList =  mTwitter.getHomeTimeline(paging);
+
+	                return responseList;
+	            } catch (TwitterException e) {
+	                e.printStackTrace();
+
+	            }
+	            return null;
+	        }
+	        @Override
+	        protected void onPostExecute(ResponseList<twitter4j.Status> result) {
+=======
+			@Override
+			protected void onPostExecute(ArrayList<twitter4j.Status> result) {
+>>>>>>> .r575
+
+<<<<<<< .mine
+	            if (result != null) {
+	            	api(result);
+	            	if(ismAtClean){
+						 mAdapter.clear();
+=======
+				if (result != null) {
+>>>>>>> .r575
+
+<<<<<<< .mine
+						}
+	                for (twitter4j.Status status : result) {
+
+	                    mAdapter.add(status);
+	                }
+
+	            }else  if(limit<=0){
+	             	net();
+	   			 showToast("APIが切れています。");
+	   			 showToast(String.valueOf("回復まで"+time+"秒"));
+	   		 }
+	            else {
+	            	net();
+	                showToast("タイムラインが取得できませんでした。");
+	            }
+	        }
+	    };
+	    task.execute();
+=======
+					if(ismAtClean){
+						mAdapter.clear();
+					}
+
+					for (twitter4j.Status status:result) {
+						mAdapter.add(status);
+					}
+
+				}else  if(limit<=0){
+					net();
+					showToast("APIが切れています。");
+					showToast(String.valueOf("回復まで"+time+"秒"));
+				}
+				else {
+					net();
+					showToast("タイムラインが取得できませんでした。");
+				}
+			}
+		};
+		task.execute();
+>>>>>>> .r575
+	}
+	private void showToast(String text) {
+		Toast ts=Toast.makeText(this, text, Toast.LENGTH_SHORT);
+		ts.setGravity(Gravity.TOP,120 , 0);
+		ts.show();
+	}
+
+<<<<<<< .mine
+	private ResponseList<Status> api(ResponseList<twitter4j.Status> responseList){
+=======
+	private void showToast(String text) {
+		Toast ts=Toast.makeText(this, text, Toast.LENGTH_SHORT);
+		ts.setGravity(Gravity.TOP,120 , 0);
+		ts.show();
+	}
+
+	private ResponseList<twitter4j.Status>  api(ResponseList<twitter4j.Status>responseList){
+>>>>>>> .r575
+
+		RateLimitStatus ratelimit = responseList.getRateLimitStatus();
+<<<<<<< .mine
+	    	Log.d("text",String.valueOf(ratelimit.getRemaining()));
+		 limit = ratelimit.getRemaining();
+		 time = ratelimit.getSecondsUntilReset();
+//	    	showToast(String.valueOf(a));
+//		 showToast(String.valueOf("後"+limit+"回"));
+//		 showToast(String.valueOf("回復まで"+time+"秒"));
+
+		 showToast(String.valueOf("test"));
+=======
+		Log.d("text",String.valueOf(ratelimit.getRemaining()));
+		limit = ratelimit.getRemaining();
+		time = ratelimit.getSecondsUntilReset();
+
+		showToast(String.valueOf("test"));
+>>>>>>> .r575
+		//  showToast(String.valueOf("回復まで"+time+"秒"));
+<<<<<<< .mine
+		 if(limit<=0){
+			 showToast("APIが切れています。");
+		 }
+=======
+		if(limit<=0){
+			
+			showToast("APIが切れています。");
+		}
+
+>>>>>>> .r575
+		return responseList;
+
+	}
+<<<<<<< .mine
+
+=======
+	
+	
+	private  void net(){
+
+		cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		NetworkInfo nInfo = cm.getActiveNetworkInfo();
+
+		if (nInfo == null) {
+			Toast.makeText(this, "ネットワークに接続できませんでした。", Toast.LENGTH_LONG).show();
+		}
+
+	}
+>>>>>>> .r575
+
+	@Override
+	public void onDeletionNotice(StatusDeletionNotice arg0) {
+		//TODO 自動生成されたメソッド・スタブ
+	}
+
+	@Override
+	public void onScrubGeo(long arg0, long arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+	}
+
+<<<<<<< .mine
+    if (nInfo == null) {
+        Toast.makeText(this, "ネットワークに接続できませんでした。", Toast.LENGTH_LONG).show();
+=======
+	@Override
+	public void onStallWarning(StallWarning arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+>>>>>>> .r575
+
+<<<<<<< .mine
+=======
+	}
+>>>>>>> .r575
+
+<<<<<<< .mine
+    }
+}
+=======
+	@Override
+	public void onStatus(Status arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+
+		if (arrayList != null||arg0!=null) {
+			try{
+				mAdapter.clear();
+			}catch(Exception a){
+				mAdapter.clear();
+				arrayList.add(0,arg0);
+				mAdapter.addAll(arrayList);
+			}		
+			arrayList.add(0,arg0);
+			mAdapter.addAll(arrayList);
+		}else  if(limit<=0){
+			net();
+			showToast("APIが切れています。");
+			showToast(String.valueOf("回復まで"+time+"秒"));
+		}
+		else {
+			net();
+			showToast("タイムラインが取得できませんでした。");
+		}
+
+	}
+
+
+
+	@Override
+	public void onTrackLimitationNotice(int arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+>>>>>>> .r575
+
+<<<<<<< .mine
+//public boolean onTouch(MotionEvent e1 // TouchDown時のイベント
+//        ,MotionEvent e2   // TouchDown後、指の移動毎に発生するイベント
+//        ,float velocityX  // X方向の移動距離
+//        ,float velocityY) // Y方向の移動距離
+//{
+//// 絶対値の取得
+//float dx = Math.abs(velocityX);
+//    float dy = Math.abs(velocityY);
+//    // 指の移動方向(縦横)および距離の判定
+//    if (dx > dy && dx > 300) {
+//        // 指の移動方向(左右)の判定
+//            if (e1.getX() < e2.getX()) {
+//                viewFlipper.showPrevious();
+//            } else {
+//                viewFlipper.showNext();
+//            }
+//            return true;
+//    }
+//return false;
+//
+//}
+//
+//	}
+=======
+	}
+
+	@Override
+	public void onException(Exception arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onBlock(User arg0, User arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onDeletionNotice(long arg0, long arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onDirectMessage(DirectMessage arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onFavorite(User arg0, User arg1, Status arg2) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onFollow(User arg0, User arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onFriendList(long[] arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUnblock(User arg0, User arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUnfavorite(User arg0, User arg1, Status arg2) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUnfollow(User arg0, User arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUserListCreation(User arg0, UserList arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+>>>>>>> .r575
+
+	@Override
+	public void onUserListDeletion(User arg0, UserList arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUserListMemberAddition(User arg0, User arg1, UserList arg2) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUserListMemberDeletion(User arg0, User arg1, UserList arg2) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUserListSubscription(User arg0, User arg1, UserList arg2) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUserListUnsubscription(User arg0, User arg1, UserList arg2) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUserListUpdate(User arg0, UserList arg1) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onUserProfileUpdate(User arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+}
+
+class MyUserStreamAdapter extends UserStreamAdapter//ユーザーストリーム
+{
+	//private static final Logger logger = Logger.getLogger(MyUserStreamAdapter.class);
+
+	/*
+	 * ツイートに対する反応
+	 */
+	@Override
+	public void onStatus(Status status)
+	{
+		super.onStatus(status);
+
+
+<<<<<<< .mine
+	}
+
+=======
+}	
+>>>>>>> .r575
+
+<<<<<<< .mine
+		String message = source.getName() + "が" + target.getName() + "のツイート「" + favoritedStatus.getText() + "」をふぁぼった";
+		logger.info(message);
+	}
+	*/
+//	public void showToast(String text) {
+//		Toast ts=Toast.makeText(null, text, Toast.LENGTH_SHORT);
+//		ts.setGravity(Gravity.TOP,0 , 180);
+//		ts.show();
+//	}
+}
+}=======
+
+>>>>>>> .r575

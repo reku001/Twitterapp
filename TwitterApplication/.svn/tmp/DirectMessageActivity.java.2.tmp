@@ -1,0 +1,345 @@
+package jp.nadai.twitterapplication;
+
+import java.util.List;
+
+import jp.nadai.twitterapplication.model.DMline;
+import jp.nadai.twitterapplication.model.Mentionline;
+import twitter4j.DirectMessage;
+import twitter4j.ResponseList;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.User;
+import android.app.AlertDialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager.LayoutParams;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.loopj.android.image.SmartImageView;
+
+public class DirectMessageActivity extends ListActivity {
+
+	private DMline mAdapter;
+    private Twitter mTwitter;
+	protected int pageNum;
+	String ac;
+	 boolean ismAtClean=false;
+    private static final int MENU_ID_A = 0;
+    private static final int MENU_ID_B = 1;
+    private static final int MENU_ID_C = 2;
+    private static final int MENU_ID_D = 3;
+    private static final int MENU_ID_E = 4;
+
+	 @Override
+	    protected void onCreate(Bundle savedInstanceState) {
+	        super.onCreate(savedInstanceState);
+	        getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);//最初キーボードを非表示
+	        setContentView(R.layout.activity_direct_message);
+	        //setContentView(R.layout.activity_direct_message);
+
+	        if (!TwitterUtils.hasAccessToken(this)) {
+	            Intent intent = new Intent(this, TwitterOAuthActivity.class);
+	            startActivity(intent);
+	            finish();
+	        } else {
+	        	 mAdapter = new DMline(this);
+	            setListAdapter(mAdapter);
+
+	            mTwitter = TwitterUtils.getTwitterInstance(this);
+	            reloadDirectMessages();
+	            try {
+	            	Log.d("dm",mTwitter.getRateLimitStatus().get("/statuses/home_timeline").toString());
+	            } catch (TwitterException e) {
+	            	// TODO 自動生成された catch ブロック
+	            	e.printStackTrace();
+	            }
+	        }
+	        final TextView directing=(TextView)findViewById(R.id.editText1);
+			 Button btn = (Button)findViewById(R.id.button1);
+			btn.setOnClickListener(new View.OnClickListener() {
+
+				public void onClick(View v) {
+				    // TODO 自動生成されたメソッド・スタブ
+				    try {
+					    mTwitter.sendDirectMessage(ac, directing.getText().toString());
+				    } catch (TwitterException e2) {
+				    	e2.printStackTrace();
+				    }
+				    showToast("DMを送りました。");
+				    directing.setText(null);
+				}
+				});
+	        final ListView listView = (ListView) findViewById(android.R.id.list);
+
+			listView.setOnScrollListener(new OnScrollListener() {
+
+				@Override
+				public void onScrollStateChanged(AbsListView view, int scrollState) {
+				}
+
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem,
+						int visibleItemCount, int totalItemCount) {
+
+//					if(listView.getLastVisiblePosition() == listView.getCount() - 1){
+//					    View view1 = listView.getChildAt(listView.getChildCount() - 1);
+//					    if(view1.getBottom() <= listView.getBottom() - listView.getPaddingBottom()){
+//					    	reloadDirectMessages();
+//							showToast("loading...");
+//					    }
+//					}
+
+
+
+					int position = listView.getFirstVisiblePosition();
+
+					if (listView.getChildAt(0) != null) {
+						int y = listView.getLastVisiblePosition();
+						//listView.setSelectionFromTop(position, y);
+						int z=pageNum*20-1;
+						if (y==z) {
+							pageNum++;
+							 reloadDirectMessages();
+							showToast("loading...");
+						}
+
+					}
+
+
+				}
+			});
+
+
+		Mentionline mention = new Mentionline();
+
+		mention.init();
+
+
+		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+			   @Override
+			   public boolean onItemLongClick(AdapterView parent,View view, int position, long id) {
+				   LayoutInflater factory = LayoutInflater.from(DirectMessageActivity.this);
+			       final View inputview = factory.inflate(R.layout.detail_tweet, null);
+
+				   AlertDialog.Builder syosai = new AlertDialog.Builder(DirectMessageActivity.this);
+				   User statusUser=mAdapter.getItem(position).getSender();
+
+				   SmartImageView icon = (SmartImageView)inputview.findViewById(R.id.Icon);
+				   icon.setImageUrl(statusUser.getProfileImageURL());
+				   TextView name=(TextView)inputview.findViewById(R.id.Name);
+				   name.setText("ユーザ名    : "+statusUser.getName()+"\n");
+
+				   TextView screen_name=(TextView)inputview.findViewById(R.id.Screen_Name);
+				   screen_name.setText("ID               : "+statusUser.getScreenName()+"\n");
+
+				   TextView follow=(TextView)inputview.findViewById(R.id.FollowCount);
+				   follow.setText("フォロー    : "+statusUser.getFriendsCount()+"\n");
+
+				   TextView follower=(TextView)inputview.findViewById(R.id.Follower);
+				   follower.setText("フォロワー: "+statusUser.getFollowersCount()+"\n");
+
+				   TextView favorite=(TextView)inputview.findViewById(R.id.Favorite);
+				   favorite.setText("お気に入り: "+statusUser.getFavouritesCount()+"\n");
+
+				   TextView text=(TextView)inputview.findViewById(R.id.Text);
+				   text.setText("自己紹介文: \n"+statusUser.getDescription()+"\n");
+
+			       syosai.setTitle("詳細");
+			       syosai.setView(inputview);
+				   syosai.show();
+				   return true;
+			   }
+			}
+		);
+	}
+
+
+
+		protected void onListItemClick(ListView l, View v, final int position, final long id){
+			super.onListItemClick(l, v, position, id);
+			//showToast("Short Tap" + String.valueOf(position));
+//			 super.onListItemClick(l, v, position, id);
+
+		        String[] dialogItem = new String[]{"DMの返信"};
+		        AlertDialog.Builder dialogMenu = new AlertDialog.Builder(this);
+		        dialogMenu.setItems(dialogItem, new DialogInterface.OnClickListener() {
+
+
+		            public void onClick(DialogInterface dialog, int which)
+		            {
+<<<<<<< .mine
+	    	        	showToast("DMの返信");
+=======
+
+		            	 switch (which)
+		                 {
+		     	        case 0:
+		    	            //リプライ押下時の操作
+		     	        	showToast("リプライの取得");
+		    	            // Intent intent = new Intent(this,ReplyActivity.class);
+		    		         //startActivity(intent);
+
+		     	        	break;
+
+		    	        case 1:
+		    	            //リツイート押下時の操作
+		    	        	showToast("リツイートの取得");
+		    	            //Intent intent2 = new Intent(this,????.class);
+		    		        //startActivity(intent);
+		    	        	break;
+>>>>>>> .r556
+
+	    	        	ac=mAdapter.getItem(position).getSenderScreenName();
+	    	        	showToast("送信先の相手を設定しました。");
+		                Intent intent4 = new Intent(DirectMessageActivity.this, SubDirectMessageActivity.class);
+		                intent4.putExtra("ID",ac );
+		                startActivity(intent4);
+
+//		            	 switch (which)
+//		                 {
+//		     	        case 0:
+//		    	            //リプライ押下時の操作
+//		     	        	showToast("リプライの取得");
+//		    	            // Intent intent = new Intent(this,ReplyActivity.class);
+//		    		         //startActivity(intent);
+//		     	        	break;
+//
+//		    	        case 1:
+//		    	            //リツイート押下時の操作
+//		    	        	showToast("リツイートの取得");
+//		    	            //Intent intent2 = new Intent(this,????.class);
+//		    		        //startActivity(intent);
+//		    	        	break;
+//
+//		    	        case 2:
+//		    	            //お気に入り押下時の操作
+//		    	        	showToast("お気に入りの取得");
+//		    	            //Intent intent3 = new Intent(this,????.class);
+//		    		        //startActivity(intent);
+//		            	    break;
+//
+//		    	        case 3:
+//		    	            //お気に入り押下時の操作
+//		    	        	showToast("DMの返信");
+//
+//		    	        	ac=mAdapter.getItem(position).getSenderScreenName();
+//		    	        	showToast("送信先の相手を設定しました。");
+//
+////	    	                Intent intent4 = new Intent(DirectMessageActivity.this, SubDirectMessageActivity.class);
+////	    	                intent4.putExtra("ID",id );
+////	    	                startActivity(intent4);
+//		            	    break;
+//		                 }
+
+
+		            }
+		        }).create().show();
+
+
+		}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.direct_message, menu);
+
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+
+		switch (item.getItemId()) {
+
+		    case R.id.home:
+			  Intent intent0=new Intent(this,HomeActivity.class);
+			  startActivity(intent0);
+			  showToast("ホーム画面に移動しました");
+			  return true;
+
+		    case R.id.reply://リプライ選択時
+			  Intent intent1 = new Intent(this,ReplyActivity.class);
+			  startActivity(intent1);
+			  showToast("リプライ画面に移動しました");
+			  return true;
+
+		    case R.id.DM://DM選択時
+			  Intent intent2 = new Intent(this,DirectMessageActivity.class);
+				startActivity(intent2);
+				showToast("DM画面に移動しました");
+			  return true;
+
+		    case R.id.search://検索選択時
+			  Intent intent3 = new Intent(this,SearchActivity.class);
+			  startActivity(intent3);
+			  showToast("検索画面に移動しました");
+			  return true;
+			case R.id.reload://検索選択時
+				 ismAtClean=true;
+				 pageNum=1;
+				reloadDirectMessages();
+				showToast("更新しています");
+				return true;
+
+////マニフェストファイルへの宣言を書いてないので、忘れずに。
+
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+
+	private void reloadDirectMessages() {
+	    AsyncTask<Void, Void, List<twitter4j.DirectMessage>> task = new AsyncTask<Void, Void, List<twitter4j.DirectMessage>>() {
+	        @Override
+	        protected ResponseList<DirectMessage> doInBackground(Void... params) {
+	            try {
+	            	ResponseList<DirectMessage> temp = mTwitter.getDirectMessages();
+	                return mTwitter.getDirectMessages();
+	            } catch (TwitterException e) {
+	                e.printStackTrace();
+	            }
+	            return null;
+	        }
+
+	        @Override
+	        protected void onPostExecute(List<twitter4j.DirectMessage> result) {
+	            if (result != null) {
+	            	 mAdapter.clear();
+	                Log.d("dm",result.toString());
+	                for (twitter4j.DirectMessage dm : result) {
+	                	 mAdapter.add(dm);
+	                }
+	                getListView().setSelection(0);
+	            } else {
+	                showToast("DMの取得に失敗しました。。。");
+	            }
+	        }
+	    };
+	    task.execute();
+	}
+
+	private void showToast(String text) {
+	    Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+	}
+
+}
